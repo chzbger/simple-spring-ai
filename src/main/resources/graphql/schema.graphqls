@@ -1,0 +1,28 @@
+type Query {
+    health: String!
+    aiConfigs: [AiConfig!]!
+    aiConfig(id: ID!): AiConfig
+}
+
+type Mutation {
+    createAiConfig(input: AiConfigInput!): AiConfig!
+    updateAiConfig(id: ID!, input: AiConfigInput!): AiConfig!
+    deleteAiConfig(id: ID!): Boolean!
+}
+
+type Subscription {
+    chat(message: String!, configId: ID!): String!
+}
+
+type AiConfig {
+    id: ID!
+    type: String!
+    model: String!
+    apiKeyMasked: String!
+}
+
+input AiConfigInput {
+    type: String!
+    model: String!
+    apiKey: String!
+}

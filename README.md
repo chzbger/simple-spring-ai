@@ -14,11 +14,14 @@ Spring AI + GraphQL 로 AI 호출하여 실시간 스트리밍 응답을 받는 
 ### Frontend
 - React 19 + TypeScript
 - Vite 8
+- graphql-request (Query / Mutation)
+- graphql-ws (Subscription)
 
 ## 프로젝트 구조
 
 ```
 com.simple.ai
+├── config/                          # 인프라 설정 (CryptoConfig)
 ├── domain/                          # 도메인 모델 (AiConfig)
 ├── application/
 │   ├── port/in/                     # 인바운드 포트 (ChatUseCase, AiConfigUseCase)

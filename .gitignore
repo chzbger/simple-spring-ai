@@ -1,0 +1,14 @@
+.gradle/
+build/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+log/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/*.log
+frontend/*.local
