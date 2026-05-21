@@ -28,10 +28,41 @@ spring:
     websocket:
       path: /graphql
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 394858198224-m4qvlkrrqikdeiqe4f9rt5e6e041hoh0.apps.googleusercontent.com
+            client-secret: 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
+            scope: openid, email
+            redirect-uri: http://localhost:3000/api/auth/oauth/callback/{registrationId} # front 포트로 설정
+
 server:
   port: 8080
+
+logging:
+  level:
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.web: DEBUG
+    com.simplejwtauth: DEBUG
+    com.simple.ai: DEBUG
 
 app:
   crypto:
     password: wD4B4jav15CuaC7c4edOvBrWJ7XE+7+2Zc28/jtSstE=
     salt: 0bf6b78ec879f2dc
+
+simple-jwt-auth:
+  jwt:
+    secret: 12bAFdd8z7OYUfNyNSjE9Pd++mtsS9ZQGfUyj2gTOe6yTdmqcsnrq/M64/pzrEkO
+    access-token-expiry: 15m
+    refresh-token-expiry: 2h
+    session-max-lifetime: 2d
+  web:
+    base-path: /api/auth
+    cookie-name: sja_rt
+    cookie-secure: false # 개발환경 local이라서 false로 함
+    cookie-same-site: Lax
+    post-login-redirect: /
+    post-login-error-redirect: /?sja_error=

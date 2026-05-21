@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface AiConfigPort {
 
-    AiConfig save(AiConfig config);
+    AiConfig save(Long userId, AiConfig config);
 
-    Optional<AiConfig> findById(Long id);
+    Optional<AiConfig> findById(Long userId, Long id);
 
-    List<AiConfig> findAll();
+    List<AiConfig> findAll(Long userId);
 
-    void deleteById(Long id);
+    void deleteById(Long userId, Long id);
 }

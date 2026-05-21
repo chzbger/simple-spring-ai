@@ -11,39 +11,41 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.ZonedDateTime;
 
 @Entity
 @Table(
-        name = "AI_CONFIG",
-        uniqueConstraints = @UniqueConstraint(name = "uk_user_type", columnNames = {"user_id", "type"})
+        name = "USERS",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_username", columnNames = "username"),
+                @UniqueConstraint(name = "uk_provider", columnNames = {"provider", "provider_id"})
+        }
 )
 @Getter
 @Setter
 @NoArgsConstructor
-public class AiConfigEntity {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @Column(length = 64)
+    private String username;
 
-    @Column(nullable = false)
-    private String type;
+    @Column(length = 72)
+    private String passwordHash;
 
-    @Column(nullable = false)
-    private String model;
+    @Column(length = 32)
+    private String provider;
 
-    @Column(nullable = false, length = 1024)
-    private String apiKey;
+    @Column(length = 255)
+    private String providerId;
+
+    @Column(length = 255)
+    private String email;
 
     @CreationTimestamp
     private ZonedDateTime createdAt;
-
-    @UpdateTimestamp
-    private ZonedDateTime updatedAt;
 }

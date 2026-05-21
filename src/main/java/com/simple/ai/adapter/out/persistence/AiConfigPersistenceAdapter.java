@@ -20,34 +20,32 @@ public class AiConfigPersistenceAdapter implements AiConfigPort {
 
     @Override
     @Transactional
-    public AiConfig save(AiConfig config) {
-        var entity = mapToEntity(config);
-        var saved = repository.save(entity);
-        return mapToDomain(saved);
+    public AiConfig save(Long userId, AiConfig config) {
+        AiConfigEntity entity = mapToEntity(userId, config);
+        return mapToDomain(repository.save(entity));
     }
 
     @Override
-    public Optional<AiConfig> findById(Long id) {
-        return repository.findById(id).map(this::mapToDomain);
+    public Optional<AiConfig> findById(Long userId, Long id) {
+        return repository.findByIdAndUserId(id, userId).map(this::mapToDomain);
     }
 
     @Override
-    public List<AiConfig> findAll() {
-        return repository.findAll().stream().map(this::mapToDomain).toList();
+    public List<AiConfig> findAll(Long userId) {
+        return repository.findAllByUserId(userId).stream().map(this::mapToDomain).toList();
     }
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
-        repository.deleteById(id);
+    public void deleteById(Long userId, Long id) {
+        repository.deleteByIdAndUserId(id, userId);
     }
 
-    private AiConfigEntity mapToEntity(AiConfig c) {
-        if (c == null) return null;
-        AiConfigEntity entity = new AiConfigEntity();
-        if (c.getId() != null) {
-            entity = repository.findById(c.getId()).orElseThrow();
-        }
+    private AiConfigEntity mapToEntity(Long userId, AiConfig c) {
+        AiConfigEntity entity = (c.getId() != null)
+                ? repository.findByIdAndUserId(c.getId(), userId).orElseThrow()
+                : new AiConfigEntity();
+        entity.setUserId(userId);
         entity.setType(c.getType());
         entity.setModel(c.getModel());
         entity.setApiKey(textEncryptor.encrypt(c.getApiKey()));
@@ -57,6 +55,7 @@ public class AiConfigPersistenceAdapter implements AiConfigPort {
     private AiConfig mapToDomain(AiConfigEntity e) {
         return AiConfig.builder()
                 .id(e.getId())
+                .userId(e.getUserId())
                 .type(e.getType())
                 .model(e.getModel())
                 .apiKey(textEncryptor.decrypt(e.getApiKey()))

@@ -9,25 +9,31 @@ interface Props {
 
 const initialForm: AiConfigInput = {
   type: 'GEMINI',
-  model: 'gemini-3.1-flash-lite-preview',
+  model: 'gemini-3.1-flash-lite',
   apiKey: '',
 };
 
 export function ConfigPanel({ configs, onCreate, onDelete }: Props) {
   const [form, setForm] = useState<AiConfigInput>(initialForm);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCreate = async () => {
+    setError(null);
     if (!form.apiKey.trim()) {
-      alert('API Key를 입력해주세요.');
+      setError('API key is required.');
       return;
     }
-    await onCreate(form);
-    setForm(initialForm);
+    try {
+      await onCreate(form);
+      setForm(initialForm);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to create');
+    }
   };
 
   return (
     <div className="config-panel">
-      <h2>AI 설정 관리</h2>
+      <h2>AI Settings</h2>
       <div className="config-form">
         <select
           value={form.type}
@@ -36,24 +42,25 @@ export function ConfigPanel({ configs, onCreate, onDelete }: Props) {
           <option value="GEMINI">Gemini</option>
         </select>
         <input
-          placeholder="모델명"
+          placeholder="Model"
           value={form.model}
           onChange={e => setForm({ ...form, model: e.target.value })}
         />
         <input
           type="password"
-          placeholder="API Key"
+          placeholder="API key"
           value={form.apiKey}
           onChange={e => setForm({ ...form, apiKey: e.target.value })}
         />
-        <button onClick={handleCreate}>추가</button>
+        <button onClick={handleCreate}>Add</button>
       </div>
+      {error && <p className="config-error">{error}</p>}
       <div className="config-list">
-        {configs.length === 0 && <p className="config-empty">등록된 설정이 없습니다.</p>}
+        {configs.length === 0 && <p className="config-empty">No configs yet.</p>}
         {configs.map(c => (
           <div key={c.id} className="config-item">
             <span>{c.type} / {c.model} / {c.apiKeyMasked}</span>
-            <button className="delete-btn" onClick={() => onDelete(c.id)}>삭제</button>
+            <button className="delete-btn" onClick={() => onDelete(c.id)}>Delete</button>
           </div>
         ))}
       </div>

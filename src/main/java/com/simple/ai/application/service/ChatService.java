@@ -17,11 +17,11 @@ public class ChatService implements ChatUseCase {
     private final AiConfigPort aiConfigPort;
 
     @Override
-    public Flux<String> chat(String message, Long configId) {
+    public Flux<String> chat(Long userId, String message, Long configId) {
         if (message == null || message.isBlank()) {
             return Flux.just("메시지를 입력해주세요.");
         }
-        var config = aiConfigPort.findById(configId)
+        var config = aiConfigPort.findById(userId, configId)
                 .orElseThrow(() -> new IllegalArgumentException("AI Config not found: " + configId));
         log.info(message);
         return aiPort.streamChat(message, config).doOnNext(log::info);

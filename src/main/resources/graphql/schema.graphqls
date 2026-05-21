@@ -2,9 +2,11 @@ type Query {
     health: String!
     aiConfigs: [AiConfig!]!
     aiConfig(id: ID!): AiConfig
+    currentUser: UserResponse
 }
 
 type Mutation {
+    signup(input: SignupInput!): UserResponse!
     createAiConfig(input: AiConfigInput!): AiConfig!
     updateAiConfig(id: ID!, input: AiConfigInput!): AiConfig!
     deleteAiConfig(id: ID!): Boolean!
@@ -25,4 +27,16 @@ input AiConfigInput {
     type: String!
     model: String!
     apiKey: String!
+}
+
+type UserResponse {
+    id: ID!
+    username: String
+    email: String
+}
+
+input SignupInput {
+    username: String!
+    password: String!
+    email: String
 }

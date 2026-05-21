@@ -7,13 +7,13 @@ import java.util.Optional;
 
 public interface AiConfigUseCase {
 
-    AiConfig create(String type, String model, String apiKey);
+    AiConfig create(Long userId, String type, String model, String apiKey);
 
-    AiConfig update(Long id, String type, String model, String apiKey);
+    AiConfig update(Long userId, Long id, String type, String model, String apiKey);
 
-    Optional<AiConfig> findById(Long id);
+    Optional<AiConfig> findById(Long userId, Long id);
 
-    List<AiConfig> findAll();
+    List<AiConfig> findAll(Long userId);
 
-    void delete(Long id);
+    void delete(Long userId, Long id);
 }

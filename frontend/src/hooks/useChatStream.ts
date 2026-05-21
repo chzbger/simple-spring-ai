@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { wsClient } from '../api/wsClient';
 import type { Message } from '../types';
 
@@ -12,13 +12,16 @@ export function useChatStream() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState('Ready');
+  const unsubscribeRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => () => {
+    unsubscribeRef.current?.();
+  }, []);
 
   const send = useCallback((message: string, configId: string) => {
-    const userMsg: Message = {
-      id: crypto.randomUUID(),
-      role: 'user',
-      content: message,
-    };
+    unsubscribeRef.current?.();
+
+    const userMsg: Message = { id: crypto.randomUUID(), role: 'user', content: message };
     const assistantId = crypto.randomUUID();
     const assistantMsg: Message = {
       id: assistantId,
@@ -29,7 +32,7 @@ export function useChatStream() {
 
     setMessages(prev => [...prev, userMsg, assistantMsg]);
     setSending(true);
-    setStatus('AI 응답 대기 중...');
+    setStatus('Waiting...');
 
     const finish = () => {
       setMessages(prev =>
@@ -37,15 +40,16 @@ export function useChatStream() {
       );
       setSending(false);
       setStatus('Ready');
+      unsubscribeRef.current = null;
     };
 
-    wsClient.subscribe<{ chat: string }>(
+    unsubscribeRef.current = wsClient.subscribe<{ chat: string }>(
       { query: CHAT_SUBSCRIPTION, variables: { message, configId } },
       {
         next: (result) => {
           const chunk = result.data?.chat;
           if (!chunk) return;
-          setStatus('AI 응답 수신 중...');
+          setStatus('Streaming...');
           setMessages(prev =>
             prev.map(m =>
               m.id === assistantId ? { ...m, content: m.content + chunk } : m,
@@ -63,11 +67,20 @@ export function useChatStream() {
           );
           setSending(false);
           setStatus('Ready');
+          unsubscribeRef.current = null;
         },
         complete: finish,
       },
     );
   }, []);
 
-  return { messages, sending, status, send };
+  const reset = useCallback(() => {
+    unsubscribeRef.current?.();
+    unsubscribeRef.current = null;
+    setMessages([]);
+    setSending(false);
+    setStatus('Ready');
+  }, []);
+
+  return { messages, sending, status, send, reset };
 }

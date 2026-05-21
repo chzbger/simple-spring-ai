@@ -26,13 +26,13 @@ export function MessageInput({ disabled, onSend }: Props) {
   return (
     <div className="input-area">
       <textarea
-        placeholder="메시지를 입력하세요... (Shift+Enter: 줄바꿈, Enter: 전송)"
+        placeholder="Type a message... (Shift+Enter: newline, Enter: send)"
         value={input}
         onChange={e => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
       />
       <button disabled={disabled} onClick={handleSend}>
-        전송
+        Send
       </button>
     </div>
   );

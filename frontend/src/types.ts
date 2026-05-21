@@ -17,3 +17,9 @@ export interface Message {
   content: string;
   streaming?: boolean;
 }
+
+export interface CurrentUser {
+  id: string;
+  username?: string | null;
+  email?: string | null;
+}

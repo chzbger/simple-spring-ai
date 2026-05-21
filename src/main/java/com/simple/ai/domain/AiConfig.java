@@ -3,13 +3,12 @@ package com.simple.ai.domain;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.ZonedDateTime;
-
 @Getter
 @Builder(toBuilder = true)
 public class AiConfig {
 
     private Long id;
+    private Long userId;
     private String type;
     private String model;
     private String apiKey;

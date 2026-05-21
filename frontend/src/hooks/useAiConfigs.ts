@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { graphqlClient } from '../api/graphqlClient';
+import { request } from '../api/graphqlClient';
 import type { AiConfig, AiConfigInput } from '../types';
 
 const LIST_QUERY = `
@@ -20,27 +20,31 @@ const DELETE_MUTATION = `
   }
 `;
 
-export function useAiConfigs() {
+export function useAiConfigs(enabled: boolean) {
   const [configs, setConfigs] = useState<AiConfig[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    const data = await graphqlClient.request<{ aiConfigs: AiConfig[] }>(LIST_QUERY);
+    const data = await request<{ aiConfigs: AiConfig[] }>(LIST_QUERY);
     setConfigs(data.aiConfigs);
     setSelectedId(prev => prev ?? data.aiConfigs[0]?.id ?? null);
   }, []);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    if (enabled) void refresh();
+    else {
+      setConfigs([]);
+      setSelectedId(null);
+    }
+  }, [enabled, refresh]);
 
   const create = useCallback(async (input: AiConfigInput) => {
-    await graphqlClient.request(CREATE_MUTATION, { input });
+    await request(CREATE_MUTATION, { input });
     await refresh();
   }, [refresh]);
 
   const remove = useCallback(async (id: string) => {
-    await graphqlClient.request(DELETE_MUTATION, { id });
+    await request(DELETE_MUTATION, { id });
     setSelectedId(prev => (prev === id ? null : prev));
     await refresh();
   }, [refresh]);

@@ -16,34 +16,34 @@ public class AiConfigService implements AiConfigUseCase {
     private final AiConfigPort aiConfigPort;
 
     @Override
-    public AiConfig create(String type, String model, String apiKey) {
-        return aiConfigPort.save(AiConfig.ofCreate(type, model, apiKey));
+    public AiConfig create(Long userId, String type, String model, String apiKey) {
+        return aiConfigPort.save(userId, AiConfig.ofCreate(type, model, apiKey));
     }
 
     @Override
-    public AiConfig update(Long id, String type, String model, String apiKey) {
-        var existing = aiConfigPort.findById(id)
+    public AiConfig update(Long userId, Long id, String type, String model, String apiKey) {
+        AiConfig existing = aiConfigPort.findById(userId, id)
                 .orElseThrow(() -> new IllegalArgumentException("AI Config not found: " + id));
-        var updated = existing.toBuilder()
+        AiConfig updated = existing.toBuilder()
                 .type(type)
                 .model(model)
                 .apiKey(apiKey)
                 .build();
-        return aiConfigPort.save(updated);
+        return aiConfigPort.save(userId, updated);
     }
 
     @Override
-    public Optional<AiConfig> findById(Long id) {
-        return aiConfigPort.findById(id);
+    public Optional<AiConfig> findById(Long userId, Long id) {
+        return aiConfigPort.findById(userId, id);
     }
 
     @Override
-    public List<AiConfig> findAll() {
-        return aiConfigPort.findAll();
+    public List<AiConfig> findAll(Long userId) {
+        return aiConfigPort.findAll(userId);
     }
 
     @Override
-    public void delete(Long id) {
-        aiConfigPort.deleteById(id);
+    public void delete(Long userId, Long id) {
+        aiConfigPort.deleteById(userId, id);
     }
 }
